@@ -1,0 +1,37 @@
+version: 2.1
+jobs:
+  linting:
+    executor: machine-ubuntu
+    steps:
+      - checkout
+      - run: curl -o /tmp/chefdk.deb https://packages.chef.io/files/stable/chefdk/3.13.1/debian/9/chefdk_3.13.1-1_amd64.deb
+      - run: sudo dpkg -i /tmp/chefdk.deb
+      - run: echo 'eval "$(chef shell-init bash)"' >> $BASH_ENV
+      - checkout
+      - run: cookstyle
+  unit:
+    executor: machine-ubuntu
+    steps:
+      - checkout
+      - run: curl -o /tmp/chefdk.deb https://packages.chef.io/files/stable/chefdk/3.13.1/debian/9/chefdk_3.13.1-1_amd64.deb
+      - run: sudo dpkg -i /tmp/chefdk.deb
+      - run: echo 'eval "$(chef shell-init bash)"' >> $BASH_ENV
+      - run: rspec -fd
+  kitchen:
+    executor: machine-ubuntu
+    steps:
+      - checkout
+      - run: curl -o /tmp/chefdk.deb https://packages.chef.io/files/stable/chefdk/3.13.1/debian/9/chefdk_3.13.1-1_amd64.deb
+      - run: sudo dpkg -i /tmp/chefdk.deb
+      - run: echo 'eval "$(chef shell-init bash)"' >> $BASH_ENV
+      - run: kitchen test --destroy=always
+workflows:
+  chef_validate:
+    jobs:
+      - linting
+      - unit
+      - kitchen
+executors:
+  machine-ubuntu:
+    machine:
+      image: ubuntu-2004:202107-02
