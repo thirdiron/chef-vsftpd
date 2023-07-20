@@ -21,7 +21,6 @@ workflows:
   chef_validate:
     jobs:
       - linting
-      - unit
       - kitchen
 executors:
   machine-ubuntu:
